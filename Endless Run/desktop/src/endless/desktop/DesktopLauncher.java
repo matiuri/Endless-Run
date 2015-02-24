@@ -16,8 +16,6 @@ public class DesktopLauncher {
 		config.title = Endless.TITLE + " " + Endless.VERSION;
 		config.width = Endless.width;
 		config.height = Endless.height;
-		config.width = 800;
-		config.height = 480;
 		config.resizable = Endless.RESIZABLE;
 		config.fullscreen = Endless.FULLSCREEN;
 		config.vSyncEnabled = Endless.VSYNC;
