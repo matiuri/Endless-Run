@@ -1,22 +1,26 @@
 package endless.entities;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
+import endless.Endless;
 import endless.utils.debug.RenderableDebug;
 
 public class Ground extends Actor implements RenderableDebug {
-	private Rectangle bb;
+	private TextureRegion region;
 
 	public Ground() {
 		setBounds(0, 0, 800, 16);
-		bb = new Rectangle(getX(), getY(), getWidth(), getHeight());
+		region = new TextureRegion(Endless.Entities_Ground, 800, 16);
 	}
 
-	public Rectangle getBb() {
-		return bb;
+	@Override
+	public void draw(Batch batch, float parentAlpha) {
+		batch.draw(region, getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), getScaleX(),
+				getScaleY(), getRotation());
 	}
 
 	@Override

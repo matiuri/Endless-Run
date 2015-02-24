@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 
 import endless.screens.ScreenAdapter;
 import endless.screens.TitleScreen;
@@ -20,6 +21,7 @@ public class Endless extends Game {
 
 	@Override
 	public void create() {
+		assetLoader();
 		titleScreen = new TitleScreen(this);
 		setScreen(titleScreen);
 	}
@@ -70,5 +72,15 @@ public class Endless extends Game {
 	public static void clearScreen(Color color, float a) {
 		Gdx.graphics.getGL20().glClearColor(color.r, color.g, color.b, a);
 		Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
+	}
+
+	public static Texture Terrain_Background, Entities_Ground;
+
+	private void assetLoader() {
+		MANAGER.load("Terrain/Background.png", Texture.class);
+		MANAGER.load("Entities/Ground.png", Texture.class);
+		MANAGER.finishLoading();
+		Terrain_Background = MANAGER.get("Terrain/Background.png", Texture.class);
+		Entities_Ground = MANAGER.get("Entities/Ground.png", Texture.class);
 	}
 }

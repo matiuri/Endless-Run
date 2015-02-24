@@ -24,15 +24,15 @@ public class DragInput extends DragListener {
 	public void drag(InputEvent event, float x, float y, int pointer) {
 		if (this.pointer == pointer) {
 			float delta = y - this.y;
-			if (delta >= 20) {
+			if (delta >= 20 && player.canJump()) {
 				player.setJump(true);
 				player.setCrouch(false);
-				System.out.println("Jump");
 				cancel();
 			} else if (delta <= -20) {
-				player.setJump(false);
-				player.setCrouch(true);
-				System.out.println("Crouch");
+				if (player.canCrouch()) {
+					player.setJump(false);
+					player.setCrouch(true);
+				}
 				cancel();
 			}
 		}
