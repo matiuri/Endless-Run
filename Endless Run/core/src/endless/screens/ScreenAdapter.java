@@ -6,10 +6,22 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import endless.Endless;
 
+/**
+ * La pantalla base
+ * 
+ * @author Matías
+ *
+ */
 public abstract class ScreenAdapter implements Screen {
 	protected Endless game;
 	protected Skin skin;
 
+	/**
+	 * Crea una pantalla
+	 * 
+	 * @param game
+	 *            clase principal
+	 */
 	public ScreenAdapter(Endless game) {
 		this.game = game;
 		skin = new Skin(Gdx.files.internal("skin/uiskin.json"));

@@ -10,15 +10,54 @@ import com.badlogic.gdx.graphics.Texture;
 import endless.screens.ScreenAdapter;
 import endless.screens.TitleScreen;
 
+/**
+ * Clase Principal
+ * 
+ * @author Matías
+ */
 public class Endless extends Game {
+	/**
+	 * Posibles estados de los FPS
+	 * 
+	 * @author Matías
+	 *
+	 */
+	private enum FPS {
+		NOT_RENDER(-1), UNLIMITED(0), VSYNC(60);
+
+		private int fps;
+
+		/**
+		 * Determina el valor de la variable fps
+		 * 
+		 * @param fps
+		 *            los FPS
+		 */
+		FPS(int fps) {
+			this.fps = fps;
+		}
+
+		/**
+		 * @return la variable fps
+		 */
+		public int getFps() {
+			return fps;
+		}
+	}
+
 	public static final String TITLE = "Endless Run", VERSION = "Alpha 0.0";
-	public static final int FPS_F = 0, FPS_B = -1;
+	public static final int FPS_F = FPS.UNLIMITED.getFps(), FPS_B = FPS.NOT_RENDER.getFps();
 	public static int width, height;
 	public static final boolean RESIZABLE = true, FULLSCREEN = true, VSYNC = true;
 	public static final AssetManager MANAGER = new AssetManager();
 
 	public ScreenAdapter titleScreen, gameScreen;
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.badlogic.gdx.ApplicationListener#create()
+	 */
 	@Override
 	public void create() {
 		assetLoader();
@@ -26,14 +65,26 @@ public class Endless extends Game {
 		setScreen(titleScreen);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.badlogic.gdx.Game#render()
+	 */
 	@Override
 	public void render() {
 		super.render();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.badlogic.gdx.Game#dispose()
+	 */
 	@Override
 	public void dispose() {
 		MANAGER.dispose();
+		titleScreen.dispose();
+		gameScreen.dispose();
 	}
 
 	/**
@@ -65,7 +116,7 @@ public class Endless extends Game {
 	 * Limpia la pantalla con el color especificado
 	 * 
 	 * @param color
-	 *            color
+	 *            {@link Color}
 	 * @param a
 	 *            transparencia
 	 */
@@ -74,13 +125,18 @@ public class Endless extends Game {
 		Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
 	}
 
-	public static Texture Terrain_Background, Entities_Ground;
+	public static Texture Terrain_Background, Terrain_Cloud, Entities_Ground;
 
-	private void assetLoader() {
+	/**
+	 * Cargar recursos en memoria y almacenarlos en las variables de arriba
+	 */
+	private static void assetLoader() {
 		MANAGER.load("Terrain/Background.png", Texture.class);
+		MANAGER.load("Terrain/Cloud.png", Texture.class);
 		MANAGER.load("Entities/Ground.png", Texture.class);
 		MANAGER.finishLoading();
 		Terrain_Background = MANAGER.get("Terrain/Background.png", Texture.class);
+		Terrain_Cloud = MANAGER.get("Terrain/Cloud.png", Texture.class);
 		Entities_Ground = MANAGER.get("Entities/Ground.png", Texture.class);
 	}
 }

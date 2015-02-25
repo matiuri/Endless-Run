@@ -3,6 +3,10 @@ package endless.utils.debug;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 
+/**
+ * @author Matías
+ *
+ */
 public interface RenderableDebug {
 	/**
 	 * Dibuja la superficie del actor. Se debe llamar a {@link ShapeRenderer#begin(ShapeType)} y pasarle como parámetro
@@ -10,7 +14,7 @@ public interface RenderableDebug {
 	 * {@link ShapeRenderer#end()} al finalizar.
 	 * 
 	 * @param shaper
-	 *            ShapeRenderer
+	 *            {@link ShapeRenderer}
 	 */
 	void debug(ShapeRenderer shaper);
 }

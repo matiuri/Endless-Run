@@ -11,11 +11,23 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import endless.Endless;
 
+/**
+ * La pantalla de título
+ * 
+ * @author Matías
+ *
+ */
 public class TitleScreen extends ScreenAdapter {
 	private Stage stage;
 	private Table table;
-	private TextButton play;
+	private TextButton play, exit;
 
+	/**
+	 * Crea la pantalla de título como objeto
+	 * 
+	 * @param game
+	 *            clase principal
+	 */
 	public TitleScreen(Endless game) {
 		super(game);
 	}
@@ -30,6 +42,8 @@ public class TitleScreen extends ScreenAdapter {
 		table.add(Endless.VERSION);
 		table.row();
 		table.add(play = new TextButton("Play", skin)).colspan(2).fill();
+		table.row();
+		table.add(exit = new TextButton("Exit", skin)).colspan(2).fill();
 
 		play.addCaptureListener(new ChangeListener() {
 
@@ -37,6 +51,14 @@ public class TitleScreen extends ScreenAdapter {
 			public void changed(ChangeEvent event, Actor actor) {
 				game.gameScreen = new GameScreen(game);
 				game.setScreen(game.gameScreen);
+			}
+		});
+
+		exit.addCaptureListener(new ChangeListener() {
+
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				Gdx.app.exit();
 			}
 		});
 
