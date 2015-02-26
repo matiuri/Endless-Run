@@ -131,7 +131,8 @@ public class Endless extends Game {
 		Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
 	}
 
-	public static Texture Terrain_Background, Terrain_Cloud, Entities_Ground;
+	public static Texture Terrain_Background, Terrain_Cloud, Entities_Ground, Entities_Box;
+	public static Texture[] Entities_Player;
 
 	/**
 	 * Cargar recursos en memoria y almacenarlos en las variables de arriba
@@ -140,9 +141,16 @@ public class Endless extends Game {
 		MANAGER.load("Terrain/Background.png", Texture.class);
 		MANAGER.load("Terrain/Cloud.png", Texture.class);
 		MANAGER.load("Entities/Ground.png", Texture.class);
+		MANAGER.load("Entities/Box.png", Texture.class);
+		MANAGER.load("Entities/Player/1.png", Texture.class);
+		MANAGER.load("Entities/Player/2.png", Texture.class);
 		MANAGER.finishLoading();
 		Terrain_Background = MANAGER.get("Terrain/Background.png", Texture.class);
 		Terrain_Cloud = MANAGER.get("Terrain/Cloud.png", Texture.class);
 		Entities_Ground = MANAGER.get("Entities/Ground.png", Texture.class);
+		Entities_Box = MANAGER.get("Entities/Box.png", Texture.class);
+		Entities_Player = new Texture[2];
+		Entities_Player[0] = MANAGER.get("Entities/Player/1.png", Texture.class);
+		Entities_Player[1] = MANAGER.get("Entities/Player/2.png", Texture.class);
 	}
 }

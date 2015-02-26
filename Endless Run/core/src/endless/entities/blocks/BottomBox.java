@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 
+import endless.Endless;
 import endless.entities.ground.Ground;
 
 /**
@@ -29,6 +30,7 @@ public class BottomBox extends Box {
 	 *            la posición en x
 	 */
 	public BottomBox(float x, World world) {
+		super(Endless.Entities_Box);
 		setBounds(x, 16, 64, 64);
 
 		BodyDef bd = new BodyDef();
@@ -36,7 +38,7 @@ public class BottomBox extends Box {
 		bd.position.set((getX() + getWidth() / 2) / 100f, (getY() + getHeight() / 2) / 100f);
 		b = world.createBody(bd);
 		b.setUserData(this);
-		b.setLinearVelocity(-5, 0);
+		b.setLinearVelocity(-2.5f, 0);
 
 		PolygonShape s = new PolygonShape();
 		s.setAsBox(getWidth() / 200, getHeight() / 200);
@@ -50,6 +52,11 @@ public class BottomBox extends Box {
 		s.dispose();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.badlogic.gdx.scenes.scene2d.Actor#act(float)
+	 */
 	@Override
 	public void act(float delta) {
 		setPosition(b.getPosition().x * 100, b.getPosition().y * 100, Align.center);

@@ -99,6 +99,13 @@ public class Collision implements ContactListener {
 		}
 	}
 
+	/**
+	 * @param a
+	 *            {@link Fixture}
+	 * @param b
+	 *            {@link Fixture}
+	 * @return true si uno de los {@link Fixture} es {@link Player} y el otro {@link Box}
+	 */
 	private boolean collisionPlayer_Box(Fixture a, Fixture b) {
 		if (a.getUserData() instanceof Player && b.getUserData() instanceof Box) {
 			return true;

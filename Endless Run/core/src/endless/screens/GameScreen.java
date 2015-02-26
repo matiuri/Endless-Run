@@ -13,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -48,9 +49,11 @@ public class GameScreen extends ScreenAdapter {
 	private Ground ground;
 	private Player player;
 	private Array<Actor> backActors, frontActors;
-	private boolean debug = true; // TEST
+	private boolean debug = false; // TEST
 	private final float TIMER_CLOUDS = 1.5f, TIMER_BOXES = 1.5f;;
 	private float timer_clouds, lastY_clouds = 0, accum, timer_boxes = TIMER_BOXES;
+	private Label score;
+	private int points = 0;
 
 	/**
 	 * Inicializa la pantalla de juego como objeto
@@ -96,6 +99,10 @@ public class GameScreen extends ScreenAdapter {
 		player = new Player(world);
 		front.addActor(player);
 
+		score = new Label("Score: ", skin);
+		score.setPosition(0, 480 - score.getHeight());
+		front.addActor(score);
+
 		ghost = new Ghost();
 		ghost.addListener(new DragInput(player));
 		front.addActor(ghost);
@@ -114,14 +121,14 @@ public class GameScreen extends ScreenAdapter {
 		despawnCloud();
 		spawnBox(delta);
 		despawnBox();
-
+		score.setText("Score: " + points);
 		if (debug) {
 			debug();
+			b2dr.render(world, b2dCam.combined);
 		} else {
 			back.draw();
 			front.draw();
 		}
-		b2dr.render(world, b2dCam.combined);
 		physics(delta);
 		back.act(delta);
 		front.act(delta);
@@ -257,6 +264,9 @@ public class GameScreen extends ScreenAdapter {
 		}
 	}
 
+	/**
+	 * Elimina las cajas que salgan de la pantalla
+	 */
 	private void despawnBox() {
 		Iterator<Actor> iter = front.getActors().iterator();
 		while (iter.hasNext()) {
@@ -265,6 +275,7 @@ public class GameScreen extends ScreenAdapter {
 				Box temp = (Box) a;
 				if (temp.getX() + temp.getWidth() < 0) {
 					temp.remove();
+					points += 10;
 				}
 			}
 		}

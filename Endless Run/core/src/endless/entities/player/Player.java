@@ -1,6 +1,8 @@
 package endless.entities.player;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -14,7 +16,9 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 
+import endless.Endless;
 import endless.utils.debug.RenderableDebug;
+import endless.utils.graphics.Animation;
 
 /**
  * El jugador
@@ -27,14 +31,16 @@ public class Player extends Actor implements RenderableDebug {
 	private Body b;
 	private boolean jump = false, crouch = false,/* OLD */applyGravity = false, canJump = true, canCrouch = true;
 	private boolean stand;
-	private final float GRAVITY = -425, TIMER = 0.75f;
-	private float timer = TIMER;
+	private final float GRAVITY = -425, TIMER = 0.75f; // OLD
+	private float timer = TIMER; // OLD
+	private Animation animation;
 
 	/**
 	 * Crea el jugador y define su cuerpo por medio de {@link Rectangle}
 	 */
 	public Player(World world) {
 		setBounds(16, 16, 64, 256);
+		animation = new Animation(Endless.Entities_Player, true, 0.05f);
 
 		BodyDef bd = new BodyDef();
 		bd.type = BodyType.DynamicBody;
@@ -80,6 +86,12 @@ public class Player extends Actor implements RenderableDebug {
 		}
 
 		setPosition(b.getPosition().x * 100, b.getPosition().y * 100, Align.center);
+	}
+
+	@Override
+	public void draw(Batch batch, float parentAlpha) {
+		batch.draw(animation.getActualFrame(Gdx.graphics.getDeltaTime()), getX(), getY(), getOriginX(), getOriginY(),
+				getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
 	}
 
 	/*
