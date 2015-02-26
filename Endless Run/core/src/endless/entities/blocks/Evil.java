@@ -1,18 +1,14 @@
 package endless.entities.blocks;
 
-import com.badlogic.gdx.math.Rectangle;
-
 import endless.entities.player.Player;
+import endless.utils.debug.RenderableDebug;
 
 /**
- * Indica que la clase que la implemente va a dañar al {@link Player}
+ * Interfaz que indica que la clase que la implemente va a herir al {@link Player}
  * 
  * @author Matías
  *
  */
-public interface Evil {
-	/**
-	 * @return el cuerpo del objeto
-	 */
-	Rectangle getBb();
+public interface Evil extends RenderableDebug {
+	// Nothing
 }

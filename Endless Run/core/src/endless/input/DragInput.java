@@ -26,12 +26,24 @@ public class DragInput extends DragListener {
 		this.player = player;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.badlogic.gdx.scenes.scene2d.utils.DragListener#dragStart(com.badlogic.gdx.scenes.scene2d.InputEvent,
+	 * float, float, int)
+	 */
 	@Override
 	public void dragStart(InputEvent event, float x, float y, int pointer) {
 		this.y = y;
 		this.pointer = pointer;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.badlogic.gdx.scenes.scene2d.utils.DragListener#drag(com.badlogic.gdx.scenes.scene2d.InputEvent, float,
+	 * float, int)
+	 */
 	@Override
 	public void drag(InputEvent event, float x, float y, int pointer) {
 		if (this.pointer == pointer) {
@@ -40,11 +52,9 @@ public class DragInput extends DragListener {
 				player.setJump(true);
 				player.setCrouch(false);
 				cancel();
-			} else if (delta <= -20) {
-				if (player.canCrouch()) {
-					player.setJump(false);
-					player.setCrouch(true);
-				}
+			} else if (delta <= -20 && player.canCrouch()) {
+				player.setJump(false);
+				player.setCrouch(true);
 				cancel();
 			}
 		}

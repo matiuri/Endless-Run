@@ -7,12 +7,12 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import endless.utils.debug.RenderableDebug;
 
 /**
- * Clase abstracta que extiende a {@link Actor} e implementa a {@link Evil} y a {@link RenderableDebug}
+ * Clase abstracta que extiende a {@link Actor} e implementa a {@link Evil}, que extiende a {@link RenderableDebug}
  * 
  * @author Matías
  *
  */
-public abstract class Box extends Actor implements Evil, RenderableDebug {
+public abstract class Box extends Actor implements Evil {
 
 	/*
 	 * (non-Javadoc)

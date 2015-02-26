@@ -3,6 +3,7 @@ package endless.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.Disposable;
 
 import endless.Endless;
 
@@ -12,7 +13,7 @@ import endless.Endless;
  * @author Matías
  *
  */
-public abstract class ScreenAdapter implements Screen {
+public abstract class ScreenAdapter implements Screen, Disposable {
 	protected Endless game;
 	protected Skin skin;
 

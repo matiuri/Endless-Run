@@ -3,7 +3,16 @@ package endless.entities.player;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 
 import endless.utils.debug.RenderableDebug;
 
@@ -13,25 +22,35 @@ import endless.utils.debug.RenderableDebug;
  * @author Matías
  *
  */
+@SuppressWarnings("unused")
 public class Player extends Actor implements RenderableDebug {
-	private Rectangle bb;
-	private boolean jump = false, crouch = false, applyGravity = false, canJump = true, canCrouch = true;
+	private Body b;
+	private boolean jump = false, crouch = false,/* OLD */applyGravity = false, canJump = true, canCrouch = true;
+	private boolean stand;
 	private final float GRAVITY = -425, TIMER = 0.75f;
 	private float timer = TIMER;
 
 	/**
 	 * Crea el jugador y define su cuerpo por medio de {@link Rectangle}
 	 */
-	public Player() {
+	public Player(World world) {
 		setBounds(16, 16, 64, 256);
-		bb = new Rectangle(getX(), getY(), getWidth(), getHeight());
-	}
 
-	/**
-	 * @return el cuerpo del jugador
-	 */
-	public Rectangle getBb() {
-		return bb;
+		BodyDef bd = new BodyDef();
+		bd.type = BodyType.DynamicBody;
+		bd.position.set((getX() + getWidth() / 2) / 100f, (getY() + getHeight() / 2) / 100f);
+		b = world.createBody(bd);
+		b.setUserData(this);
+
+		PolygonShape s = new PolygonShape();
+		s.setAsBox(getWidth() / 200, getHeight() / 200);
+		FixtureDef fd = new FixtureDef();
+		fd.shape = s;
+		fd.density = 0.5f;
+		fd.friction = 0.5f;
+		Fixture f = b.createFixture(fd);
+		f.setUserData(this);
+		s.dispose();
 	}
 
 	/*
@@ -41,9 +60,26 @@ public class Player extends Actor implements RenderableDebug {
 	 */
 	@Override
 	public void act(float delta) {
-		setApplyGravity();
-		doActions(delta);
-		bb.set(getX(), getY(), getWidth(), getHeight());
+		// OLD
+		// setApplyGravity();
+		// doActions(delta);
+		// bb.set(getX(), getY(), getWidth(), getHeight());
+
+		if (stand) {
+			canJump = true;
+			canCrouch = true;
+		} else {
+			canJump = false;
+			canCrouch = false;
+		}
+
+		if (jump) {
+			Vector2 impulse = new Vector2(0, 5.3f), point = b.getPosition();
+			b.applyLinearImpulse(impulse, point, true);
+			jump = false;
+		}
+
+		setPosition(b.getPosition().x * 100, b.getPosition().y * 100, Align.center);
 	}
 
 	/*
@@ -92,7 +128,17 @@ public class Player extends Actor implements RenderableDebug {
 	}
 
 	/**
-	 * Se debería aplicar gravedad?
+	 * Modifica el valor de la variable booleana stand
+	 * 
+	 * @param stand
+	 *            nuevo valor booleano
+	 */
+	public void setStand(boolean stand) {
+		this.stand = stand;
+	}
+
+	/**
+	 * Se debería aplicar gravedad? OLD
 	 */
 	private void setApplyGravity() {
 		if (getY() <= 16) {

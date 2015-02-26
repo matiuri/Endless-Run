@@ -6,6 +6,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.utils.Disposable;
 
 import endless.screens.ScreenAdapter;
 import endless.screens.TitleScreen;
@@ -82,9 +83,14 @@ public class Endless extends Game {
 	 */
 	@Override
 	public void dispose() {
-		MANAGER.dispose();
-		titleScreen.dispose();
-		gameScreen.dispose();
+		checkedDispose(MANAGER);
+		checkedDispose(titleScreen);
+		checkedDispose(gameScreen);
+	}
+
+	private void checkedDispose(Disposable d) {
+		if (d != null)
+			d.dispose();
 	}
 
 	/**

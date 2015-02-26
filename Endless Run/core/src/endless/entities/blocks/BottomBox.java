@@ -2,7 +2,14 @@ package endless.entities.blocks;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 
 import endless.entities.ground.Ground;
 
@@ -13,7 +20,7 @@ import endless.entities.ground.Ground;
  *
  */
 public class BottomBox extends Box {
-	private Rectangle bb;
+	private Body b;
 
 	/**
 	 * Determina la posición del objeto y su cuerpo
@@ -21,23 +28,32 @@ public class BottomBox extends Box {
 	 * @param x
 	 *            la posición en x
 	 */
-	public BottomBox(float x) {
+	public BottomBox(float x, World world) {
 		setBounds(x, 16, 64, 64);
-		bb = new Rectangle(getX(), getY(), getWidth(), getHeight());
+
+		BodyDef bd = new BodyDef();
+		bd.type = BodyType.KinematicBody;
+		bd.position.set((getX() + getWidth() / 2) / 100f, (getY() + getHeight() / 2) / 100f);
+		b = world.createBody(bd);
+		b.setUserData(this);
+		b.setLinearVelocity(-5, 0);
+
+		PolygonShape s = new PolygonShape();
+		s.setAsBox(getWidth() / 200, getHeight() / 200);
+		FixtureDef fd = new FixtureDef();
+		fd.shape = s;
+		fd.density = 0.5f;
+		fd.friction = 0.5f;
+		fd.isSensor = true;
+		Fixture f = b.createFixture(fd);
+		f.setUserData(this);
+		s.dispose();
 	}
 
-	// TEST
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.badlogic.gdx.scenes.scene2d.Actor#act(float)
-	 */
 	@Override
 	public void act(float delta) {
-		moveBy(-150 * delta, 0);
+		setPosition(b.getPosition().x * 100, b.getPosition().y * 100, Align.center);
 	}
-
-	// /test
 
 	/*
 	 * (non-Javadoc)
@@ -48,15 +64,5 @@ public class BottomBox extends Box {
 	public void debug(ShapeRenderer shaper) {
 		shaper.setColor(Color.MAROON);
 		shaper.rect(getX(), getY(), getWidth(), getHeight());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see endless.entities.blocks.Evil#getBb()
-	 */
-	@Override
-	public Rectangle getBb() {
-		return bb;
 	}
 }
