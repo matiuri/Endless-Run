@@ -8,8 +8,6 @@ Se encuentra a partir del directorio *Endless Run/core/src/endless/* de este rep
 Se encuentra en el fichero *Endless Run/desktop/src/endless/desktop/DesktopLauncher.java* de este repositorio y se ejecuta al iniciar la aplicación en la plataforma *Desktop*.
 
 ## Código *Android*
-**TODAVÍA NO MODIFIQUÉ ESTA PARTE**
-
 Se encuentra en el fichero *Endless Run/android/src/endless/android/AndroidLauncher.java* de este repositorio y se ejecuta al iniciar la aplicación en *Android*. El *Manifest* está en el fichero *Endless Run/android/AndroidManifest.xml*.
 
 ## Recursos
