@@ -26,6 +26,7 @@ import endless.entities.player.Player;
 import endless.input.DragInput;
 import endless.terrain.Background;
 import endless.terrain.Cloud;
+import endless.utils.concurrent.RandomYCloud;
 import endless.utils.debug.RenderableDebug;
 import endless.utils.physics.Collision;
 
@@ -51,9 +52,17 @@ public class GameScreen extends ScreenAdapter {
 	private Array<Actor> backActors, frontActors;
 	private boolean debug = false; // TEST
 	private final float TIMER_CLOUDS = 1.5f, TIMER_BOXES = 1.5f;;
-	private float timer_clouds, lastY_clouds = 0, accum, timer_boxes = TIMER_BOXES;
+	private float timer_clouds, accum, timer_boxes = TIMER_BOXES;
 	private Label score;
 	private int points = 0;
+
+	// Threading
+	private Thread randCloudThread;
+	// RandomYCloud thread
+	private RandomYCloud randCloud;
+	public volatile float lastY_clouds = 0;
+	public volatile boolean checkedYCloud, randomYCloudThreadRun;
+	public final Object lockMonitor = new Object();
 
 	/**
 	 * Inicializa la pantalla de juego como objeto
@@ -107,6 +116,13 @@ public class GameScreen extends ScreenAdapter {
 		ghost.addListener(new DragInput(player));
 		front.addActor(ghost);
 		Gdx.input.setInputProcessor(front);
+
+		checkedYCloud = false;
+		randomYCloudThreadRun = true;
+
+		randCloud = new RandomYCloud(this);
+		randCloudThread = new Thread(randCloud, "Random Y Cloud");
+		randCloudThread.start();
 	}
 
 	/*
@@ -163,6 +179,14 @@ public class GameScreen extends ScreenAdapter {
 		back.dispose();
 		backActors.clear();
 		frontActors.clear();
+
+		randomYCloudThreadRun = false;
+		try {
+			randCloudThread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		checkedYCloud = false;
 	}
 
 	public World getWorld() {
@@ -220,17 +244,14 @@ public class GameScreen extends ScreenAdapter {
 	private void spawnCloud(float delta) {
 		timer_clouds -= delta;
 		if (timer_clouds <= 0) {
-			float rand = 0;
-			do {
-				rand = MathUtils.random(345, 445) + MathUtils.random();
-				if (rand < lastY_clouds - 52 || rand > lastY_clouds + 52) {
-					break;
+			synchronized (lockMonitor) {
+				if (checkedYCloud) {
+					Cloud temp = new Cloud(800, lastY_clouds);
+					back.addActor(temp);
+					timer_clouds = MathUtils.random() + TIMER_CLOUDS;
+					checkedYCloud = false;
 				}
-			} while (true);
-			lastY_clouds = rand;
-			Cloud temp = new Cloud(800, rand);
-			back.addActor(temp);
-			timer_clouds = MathUtils.random() + TIMER_CLOUDS;
+			}
 		}
 	}
 

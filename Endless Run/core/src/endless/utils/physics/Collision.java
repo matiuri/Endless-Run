@@ -20,6 +20,8 @@ import endless.entities.player.Player;
 public class Collision implements ContactListener {
 	private Endless game;
 
+	private final boolean test = false;
+
 	public Collision(Endless game) {
 		this.game = game;
 	}
@@ -41,7 +43,8 @@ public class Collision implements ContactListener {
 		}
 
 		if (collisionPlayer_Box(a, b) || collisionPlayer_Box(b, a)) {
-			game.setScreen(game.titleScreen);
+			if (!test)
+				game.setScreen(game.titleScreen);
 		}
 	}
 

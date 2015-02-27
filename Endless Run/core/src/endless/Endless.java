@@ -47,7 +47,7 @@ public class Endless extends Game {
 	}
 
 	public static final String TITLE = "Endless Run", VERSION = "Alpha 0.0";
-	public static final int FPS_F = FPS.UNLIMITED.getFps(), FPS_B = FPS.NOT_RENDER.getFps();
+	public static final int FPS_F = FPS.UNLIMITED.getFps(), FPS_B = FPS.UNLIMITED.getFps();
 	public static int width, height;
 	public static final boolean RESIZABLE = true, FULLSCREEN = true, VSYNC = true;
 	public static final AssetManager MANAGER = new AssetManager();

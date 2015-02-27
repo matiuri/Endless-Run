@@ -66,11 +66,6 @@ public class Player extends Actor implements RenderableDebug {
 	 */
 	@Override
 	public void act(float delta) {
-		// OLD
-		// setApplyGravity();
-		// doActions(delta);
-		// bb.set(getX(), getY(), getWidth(), getHeight());
-
 		if (stand) {
 			canJump = true;
 			canCrouch = true;
