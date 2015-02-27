@@ -24,7 +24,7 @@ import endless.utils.debug.RenderableDebug;
  *
  */
 public class Ground extends Actor implements RenderableDebug {
-	private TextureRegion region; // OLD
+	private TextureRegion region;
 
 	/**
 	 * Crea el suelo, que es incorporeo y solo tiene fines visuales

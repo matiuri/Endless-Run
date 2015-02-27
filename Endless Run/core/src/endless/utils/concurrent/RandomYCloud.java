@@ -22,6 +22,12 @@ public class RandomYCloud implements Runnable {
 						game.lastY_clouds = rand;
 						game.checkedYCloud = true;
 					}
+				} else {
+					try {
+						game.lockMonitor.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}

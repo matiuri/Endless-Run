@@ -24,7 +24,7 @@ public class Endless extends Game {
 	 *
 	 */
 	private enum FPS {
-		NOT_RENDER(-1), UNLIMITED(0), VSYNC(60);
+		NOT_RENDER(-1), UNLIMITED(0);
 
 		private int fps;
 

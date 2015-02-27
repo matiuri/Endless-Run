@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import endless.Endless;
 import endless.entities.blocks.BottomBox;
 import endless.entities.blocks.Box;
+import endless.entities.blocks.TopBox;
 import endless.entities.ground.Ground;
 import endless.entities.player.Player;
 import endless.input.DragInput;
@@ -51,10 +52,11 @@ public class GameScreen extends ScreenAdapter {
 	private Player player;
 	private Array<Actor> backActors, frontActors;
 	private boolean debug = false; // TEST
-	private final float TIMER_CLOUDS = 1.5f, TIMER_BOXES = 1.5f;;
-	private float timer_clouds, accum, timer_boxes = TIMER_BOXES;
+	private final float TIMER_CLOUDS = 1.5f, TIMER_BOXES = 2f, GAME_OVER_TIMER = 1.5f;
+	private float timer_clouds, accum, timer_boxes = TIMER_BOXES, gameOverTimer = GAME_OVER_TIMER;
 	private Label score;
 	private int points = 0;
+	private boolean gameOver = false;
 
 	// Threading
 	private Thread randCloudThread;
@@ -87,7 +89,7 @@ public class GameScreen extends ScreenAdapter {
 		world = new World(new Vector2(0, -9.81f), true);
 		b2dr = new Box2DDebugRenderer();
 		b2dCam = new OrthographicCamera(8, 4.8f);
-		world.setContactListener(new Collision(game));
+		world.setContactListener(new Collision(this));
 
 		back = new Stage(new FitViewport(800, 480));
 		front = new Stage(new FitViewport(800, 480));
@@ -132,22 +134,29 @@ public class GameScreen extends ScreenAdapter {
 	 */
 	@Override
 	public void render(float delta) {
-		Endless.clearScreen();
-		spawnCloud(delta);
-		despawnCloud();
-		spawnBox(delta);
-		despawnBox();
-		score.setText("Score: " + points);
-		if (debug) {
-			debug();
-			b2dr.render(world, b2dCam.combined);
+		if (!gameOver) {
+			Endless.clearScreen();
+			spawnCloud(delta);
+			spawnBox(delta);
+			despawn();
+			score.setText("Score: " + points);
+			if (debug) {
+				debug();
+				b2dr.render(world, b2dCam.combined);
+			} else {
+				back.draw();
+				front.draw();
+			}
+			physics(delta);
+			back.act(delta);
+			front.act(delta);
 		} else {
-			back.draw();
-			front.draw();
+			gameOverTimer -= delta;
+			if (gameOverTimer <= 0) {
+				gameOver = false;
+				game.setScreen(game.titleScreen);
+			}
 		}
-		physics(delta);
-		back.act(delta);
-		front.act(delta);
 	}
 
 	private void physics(float delta) {
@@ -180,13 +189,20 @@ public class GameScreen extends ScreenAdapter {
 		backActors.clear();
 		frontActors.clear();
 
-		randomYCloudThreadRun = false;
+		synchronized (lockMonitor) {
+			randomYCloudThreadRun = false;
+			lockMonitor.notify();
+		}
 		try {
 			randCloudThread.join();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		checkedYCloud = false;
+	}
+
+	public void end() {
+		gameOver = true;
 	}
 
 	public World getWorld() {
@@ -250,22 +266,22 @@ public class GameScreen extends ScreenAdapter {
 					back.addActor(temp);
 					timer_clouds = MathUtils.random() + TIMER_CLOUDS;
 					checkedYCloud = false;
+					lockMonitor.notify();
 				}
 			}
 		}
 	}
 
 	/**
-	 * Elimina las nubes que salieron de la pantalla
+	 * Elimina las nubes y las cajas que salieron de la pantalla
 	 */
-	private void despawnCloud() {
+	private void despawn() {
 		Iterator<Actor> iter = back.getActors().iterator();
 		while (iter.hasNext()) {
 			Actor a = iter.next();
-			if (a instanceof Cloud) {
-				Cloud temp = (Cloud) a;
-				if (temp.getX() + temp.getWidth() < 0) {
-					temp.remove();
+			if (a instanceof Cloud || a instanceof Box) {
+				if (a.getX() + a.getWidth() < 0) {
+					a.remove();
 				}
 			}
 		}
@@ -277,28 +293,15 @@ public class GameScreen extends ScreenAdapter {
 	 * @param delta
 	 */
 	private void spawnBox(float delta) {
-		// TODO complete this
 		timer_boxes -= delta;
 		if (timer_boxes <= 0) {
-			front.addActor(new BottomBox(800, world));
-			timer_boxes = TIMER_BOXES;
-		}
-	}
-
-	/**
-	 * Elimina las cajas que salgan de la pantalla
-	 */
-	private void despawnBox() {
-		Iterator<Actor> iter = front.getActors().iterator();
-		while (iter.hasNext()) {
-			Actor a = iter.next();
-			if (a instanceof Box) {
-				Box temp = (Box) a;
-				if (temp.getX() + temp.getWidth() < 0) {
-					temp.remove();
-					points += 10;
-				}
+			float rand = MathUtils.random();
+			if (rand > 0.5f) {
+				front.addActor(new TopBox(800, world));
+			} else {
+				front.addActor(new BottomBox(800, world));
 			}
+			timer_boxes = TIMER_BOXES;
 		}
 	}
 }

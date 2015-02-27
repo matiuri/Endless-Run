@@ -6,10 +6,12 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
-import endless.Endless;
+import endless.entities.blocks.BottomBox;
 import endless.entities.blocks.Box;
+import endless.entities.blocks.TopBox;
 import endless.entities.ground.Ground;
 import endless.entities.player.Player;
+import endless.screens.GameScreen;
 
 /**
  * Clase que se encarga de gestionar las colisiones. Implementa {@link ContactListener}
@@ -18,11 +20,11 @@ import endless.entities.player.Player;
  *
  */
 public class Collision implements ContactListener {
-	private Endless game;
+	private GameScreen game;
 
 	private final boolean test = false;
 
-	public Collision(Endless game) {
+	public Collision(GameScreen game) {
 		this.game = game;
 	}
 
@@ -44,7 +46,7 @@ public class Collision implements ContactListener {
 
 		if (collisionPlayer_Box(a, b) || collisionPlayer_Box(b, a)) {
 			if (!test)
-				game.setScreen(game.titleScreen);
+				game.end();
 		}
 	}
 
@@ -111,7 +113,17 @@ public class Collision implements ContactListener {
 	 */
 	private boolean collisionPlayer_Box(Fixture a, Fixture b) {
 		if (a.getUserData() instanceof Player && b.getUserData() instanceof Box) {
-			return true;
+			if (b.getUserData() instanceof BottomBox) {
+				return true;
+			} else if (b.getUserData() instanceof TopBox) {
+				if (((Player) a.getUserData()).isCrouched()) {
+					return false;
+				} else {
+					return true;
+				}
+			} else {
+				return false;
+			}
 		} else {
 			return false;
 		}

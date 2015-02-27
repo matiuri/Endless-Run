@@ -29,12 +29,14 @@ public class DesktopLauncher {
 		try {
 			Endless.width = gd.getDisplayMode().getWidth();
 		} catch (Exception e) {
+			e.printStackTrace();
 			Endless.width = 1360;
 		}
 
 		try {
 			Endless.height = gd.getDisplayMode().getHeight();
 		} catch (Exception e) {
+			e.printStackTrace();
 			Endless.height = 768;
 
 		}
