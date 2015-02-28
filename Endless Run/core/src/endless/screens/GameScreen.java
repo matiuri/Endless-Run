@@ -43,7 +43,7 @@ public class GameScreen extends ScreenAdapter {
 	private Box2DDebugRenderer b2dr;
 	private OrthographicCamera b2dCam;
 	// </Box2d>
-
+	
 	private Stage back, front;
 	private ShapeRenderer shaper;
 	private Ghost ghost;
@@ -51,13 +51,12 @@ public class GameScreen extends ScreenAdapter {
 	private Ground ground;
 	private Player player;
 	private Array<Actor> backActors, frontActors;
-	private boolean debug = false; // TEST
 	private final float TIMER_CLOUDS = 1.5f, TIMER_BOXES = 2f, GAME_OVER_TIMER = 1.5f;
 	private float timer_clouds, accum, timer_boxes = TIMER_BOXES, gameOverTimer = GAME_OVER_TIMER;
 	private Label score;
 	private int points = 0;
-	private boolean gameOver = false;
-
+	private boolean gameOver = false, back_front = false;;
+	
 	// Threading
 	private Thread randCloudThread;
 	// RandomYCloud thread
@@ -65,7 +64,7 @@ public class GameScreen extends ScreenAdapter {
 	public volatile float lastY_clouds = 0;
 	public volatile boolean checkedYCloud, randomYCloudThreadRun;
 	public final Object lockMonitor = new Object();
-
+	
 	/**
 	 * Inicializa la pantalla de juego como objeto
 	 * 
@@ -77,7 +76,7 @@ public class GameScreen extends ScreenAdapter {
 		backActors = new Array<Actor>();
 		frontActors = new Array<Actor>();
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -90,43 +89,44 @@ public class GameScreen extends ScreenAdapter {
 		b2dr = new Box2DDebugRenderer();
 		b2dCam = new OrthographicCamera(8, 4.8f);
 		world.setContactListener(new Collision(this));
-
+		
 		back = new Stage(new FitViewport(800, 480));
 		front = new Stage(new FitViewport(800, 480));
-
+		
 		b2dCam.position.x = front.getViewport().getCamera().position.x / 100f;
 		b2dCam.position.y = front.getViewport().getCamera().position.y / 100f;
 		b2dCam.update();
-
+		
 		shaper = new ShapeRenderer();
 		shaper.setProjectionMatrix(back.getViewport().getCamera().combined);
-
+		
 		bg = new Background();
 		back.addActor(bg);
-
+		
 		ground = new Ground(this);
 		front.addActor(ground);
-
+		
 		player = new Player(world);
 		front.addActor(player);
-
+		
 		score = new Label("Score: ", skin);
 		score.setPosition(0, 480 - score.getHeight());
 		front.addActor(score);
-
+		
 		ghost = new Ghost();
 		ghost.addListener(new DragInput(player));
 		front.addActor(ghost);
 		Gdx.input.setInputProcessor(front);
-
+		front.setKeyboardFocus(ghost);
+		
 		checkedYCloud = false;
 		randomYCloudThreadRun = true;
-
+		
 		randCloud = new RandomYCloud(this);
 		randCloudThread = new Thread(randCloud, "Random Y Cloud");
 		randCloudThread.start();
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -140,7 +140,7 @@ public class GameScreen extends ScreenAdapter {
 			spawnBox(delta);
 			despawn();
 			score.setText("Score: " + points);
-			if (debug) {
+			if (Endless.DEBUG) {
 				debug();
 				b2dr.render(world, b2dCam.combined);
 			} else {
@@ -158,7 +158,7 @@ public class GameScreen extends ScreenAdapter {
 			}
 		}
 	}
-
+	
 	private void physics(float delta) {
 		float fps = Gdx.graphics.getFramesPerSecond();
 		accum += Math.min(delta, 0.25f);
@@ -167,7 +167,7 @@ public class GameScreen extends ScreenAdapter {
 			accum -= 1 / fps;
 		}
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -177,7 +177,7 @@ public class GameScreen extends ScreenAdapter {
 	public void resize(int width, int height) {
 		back.getViewport().update(width, height);
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -188,7 +188,7 @@ public class GameScreen extends ScreenAdapter {
 		back.dispose();
 		backActors.clear();
 		frontActors.clear();
-
+		
 		synchronized (lockMonitor) {
 			randomYCloudThreadRun = false;
 			lockMonitor.notify();
@@ -200,15 +200,15 @@ public class GameScreen extends ScreenAdapter {
 		}
 		checkedYCloud = false;
 	}
-
+	
 	public void end() {
 		gameOver = true;
 	}
-
+	
 	public World getWorld() {
 		return world;
 	}
-
+	
 	/**
 	 * Utiliza un {@link ShapeRenderer} para marcar las áreas de los {@link Actor} que tienen que dibujarse
 	 */
@@ -220,7 +220,7 @@ public class GameScreen extends ScreenAdapter {
 		drawDebug(frontActors);
 		shaper.end();
 	}
-
+	
 	/**
 	 * Itera el {@link Array} de {@link Actor}, y transforma los elementos que también sean instancia de
 	 * {@link RenderableDebug} a una instancia de dicha clase para ejecutar el método
@@ -235,7 +235,7 @@ public class GameScreen extends ScreenAdapter {
 			}
 		}
 	}
-
+	
 	/**
 	 * {@link Actor} fantasma
 	 * 
@@ -251,7 +251,7 @@ public class GameScreen extends ScreenAdapter {
 			setBounds(0, 0, 800, 480);
 		}
 	}
-
+	
 	/**
 	 * Crea una nube en una posición aleatoria
 	 * 
@@ -271,22 +271,29 @@ public class GameScreen extends ScreenAdapter {
 			}
 		}
 	}
-
+	
 	/**
 	 * Elimina las nubes y las cajas que salieron de la pantalla
 	 */
 	private void despawn() {
-		Iterator<Actor> iter = back.getActors().iterator();
+		Iterator<Actor> iter;
+		if (back_front) {
+			iter = back.getActors().iterator();
+		} else {
+			iter = front.getActors().iterator();
+		}
 		while (iter.hasNext()) {
 			Actor a = iter.next();
 			if (a instanceof Cloud || a instanceof Box) {
 				if (a.getX() + a.getWidth() < 0) {
+					if (a instanceof Box)
+						points += 10;
 					a.remove();
 				}
 			}
 		}
 	}
-
+	
 	/**
 	 * Crea una caja
 	 * 

@@ -2,6 +2,7 @@ package endless;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -25,9 +26,9 @@ public class Endless extends Game {
 	 */
 	private enum FPS {
 		NOT_RENDER(-1), UNLIMITED(0);
-
+		
 		private int fps;
-
+		
 		/**
 		 * Determina el valor de la variable fps
 		 * 
@@ -37,7 +38,7 @@ public class Endless extends Game {
 		FPS(int fps) {
 			this.fps = fps;
 		}
-
+		
 		/**
 		 * @return la variable fps
 		 */
@@ -45,15 +46,15 @@ public class Endless extends Game {
 			return fps;
 		}
 	}
-
-	public static final String TITLE = "Endless Run", VERSION = "Alpha 0.0";
+	
+	public static final String TITLE = "Endless Run", VERSION = "Alpha 0.1", VENDOR = "Matías Steinberg";
 	public static final int FPS_F = FPS.UNLIMITED.getFps(), FPS_B = FPS.UNLIMITED.getFps();
 	public static int width, height;
-	public static final boolean RESIZABLE = true, FULLSCREEN = true, VSYNC = true;
+	public static final boolean RESIZABLE = true, FULLSCREEN = true, VSYNC = true, DEBUG = false;
 	public static final AssetManager MANAGER = new AssetManager();
-
+	
 	public ScreenAdapter titleScreen, gameScreen;
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -65,7 +66,7 @@ public class Endless extends Game {
 		titleScreen = new TitleScreen(this);
 		setScreen(titleScreen);
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -74,8 +75,10 @@ public class Endless extends Game {
 	@Override
 	public void render() {
 		super.render();
+		if (Gdx.input.isKeyJustPressed(Keys.ESCAPE))
+			Gdx.app.exit();
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -87,12 +90,12 @@ public class Endless extends Game {
 		checkedDispose(titleScreen);
 		checkedDispose(gameScreen);
 	}
-
+	
 	private void checkedDispose(Disposable d) {
 		if (d != null)
 			d.dispose();
 	}
-
+	
 	/**
 	 * Limpia la pantalla con color negro
 	 */
@@ -100,7 +103,7 @@ public class Endless extends Game {
 		Gdx.graphics.getGL20().glClearColor(0, 0, 0, 1);
 		Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
 	}
-
+	
 	/**
 	 * Limpia la pantalla con el color especificado
 	 * 
@@ -117,7 +120,7 @@ public class Endless extends Game {
 		Gdx.graphics.getGL20().glClearColor(r, g, b, a);
 		Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
 	}
-
+	
 	/**
 	 * Limpia la pantalla con el color especificado
 	 * 
@@ -130,10 +133,10 @@ public class Endless extends Game {
 		Gdx.graphics.getGL20().glClearColor(color.r, color.g, color.b, a);
 		Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
 	}
-
+	
 	public static Texture Terrain_Background, Terrain_Cloud, Entities_Ground, Entities_Box;
 	public static Texture[] Entities_Player;
-
+	
 	/**
 	 * Cargar recursos en memoria y almacenarlos en las variables de arriba
 	 */

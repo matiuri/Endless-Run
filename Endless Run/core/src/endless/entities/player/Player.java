@@ -33,20 +33,20 @@ public class Player extends Actor implements RenderableDebug {
 	private Animation animation;
 	private final float TIMER = 1.5f;
 	private float timer = TIMER;
-
+	
 	/**
 	 * Crea el jugador y define su cuerpo por medio de {@link Rectangle}
 	 */
 	public Player(World world) {
 		setBounds(16, 16, 64, 256);
-		animation = new Animation(Endless.Entities_Player, true, 0.05f);
-
+		animation = new Animation(Endless.Entities_Player, true, 0.025f);
+		
 		BodyDef bd = new BodyDef();
 		bd.type = BodyType.DynamicBody;
 		bd.position.set((getX() + getWidth() / 2) / 100f, (getY() + getHeight() / 2) / 100f);
 		b = world.createBody(bd);
 		b.setUserData(this);
-
+		
 		PolygonShape s = new PolygonShape();
 		s.setAsBox(getWidth() / 200, getHeight() / 200);
 		FixtureDef fd = new FixtureDef();
@@ -57,7 +57,7 @@ public class Player extends Actor implements RenderableDebug {
 		f.setUserData(this);
 		s.dispose();
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -72,7 +72,7 @@ public class Player extends Actor implements RenderableDebug {
 			canJump = false;
 			canCrouch = false;
 		}
-
+		
 		if (jump) {
 			Vector2 impulse = new Vector2(0, 5.3f), point = b.getPosition();
 			b.applyLinearImpulse(impulse, point, true);
@@ -86,21 +86,21 @@ public class Player extends Actor implements RenderableDebug {
 				timer = TIMER;
 			}
 		}
-
+		
 		setPosition(b.getPosition().x * 100, b.getPosition().y * 100, Align.center);
 	}
-
+	
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
 		if (!crouch) {
-			batch.draw(animation.getActualFrame(Gdx.graphics.getDeltaTime()), getX(), getY(), getOriginX(),
-					getOriginY(), getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
+			batch.draw(animation.getActualFrame(Gdx.graphics.getDeltaTime()), getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(),
+					getScaleX(), getScaleY(), getRotation());
 		} else {
-			batch.draw(animation.getActualFrame(Gdx.graphics.getDeltaTime()), getX(), getY(), getOriginX(),
-					getOriginY(), getWidth(), getHeight() / 2, getScaleX(), getScaleY(), getRotation());
+			batch.draw(animation.getActualFrame(Gdx.graphics.getDeltaTime()), getX(), getY(), getOriginX(), getOriginY(), getWidth(),
+					getHeight() / 4 * 3, getScaleX(), getScaleY(), getRotation());
 		}
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -108,10 +108,14 @@ public class Player extends Actor implements RenderableDebug {
 	 */
 	@Override
 	public void debug(ShapeRenderer shaper) {
-		shaper.setColor(Color.WHITE);
+		if (crouch) {
+			shaper.setColor(Color.CYAN);
+		} else {
+			shaper.setColor(Color.WHITE);
+		}
 		shaper.rect(getX(), getY(), getWidth(), getHeight());
 	}
-
+	
 	/**
 	 * Define si el jugador está saltando
 	 * 
@@ -121,7 +125,7 @@ public class Player extends Actor implements RenderableDebug {
 	public void setJump(boolean jump) {
 		this.jump = jump;
 	}
-
+	
 	/**
 	 * Define si el jugador está agachado
 	 * 
@@ -131,21 +135,21 @@ public class Player extends Actor implements RenderableDebug {
 	public void setCrouch(boolean crouch) {
 		this.crouch = crouch;
 	}
-
+	
 	/**
 	 * @return si el jugador puede saltar. En el caso de que esté agachado, siempre devolverá negativo
 	 */
 	public boolean canJump() {
 		return canJump;
 	}
-
+	
 	/**
 	 * @return si el jugador puede agacharse. En el caso de que esté saltando, siempre devolverá negativo
 	 */
 	public boolean canCrouch() {
 		return canCrouch;
 	}
-
+	
 	/**
 	 * Modifica el valor de la variable booleana stand
 	 * 
@@ -155,7 +159,7 @@ public class Player extends Actor implements RenderableDebug {
 	public void setStand(boolean stand) {
 		this.stand = stand;
 	}
-
+	
 	public boolean isCrouched() {
 		return crouch;
 	}

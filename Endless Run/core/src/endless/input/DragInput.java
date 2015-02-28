@@ -1,5 +1,6 @@
 package endless.input;
 
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 
@@ -15,7 +16,7 @@ public class DragInput extends DragListener {
 	private Player player;
 	private float y;
 	private int pointer;
-
+	
 	/**
 	 * Crea el procesador de entrada táctil
 	 * 
@@ -25,7 +26,7 @@ public class DragInput extends DragListener {
 	public DragInput(Player player) {
 		this.player = player;
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -37,7 +38,7 @@ public class DragInput extends DragListener {
 		this.y = y;
 		this.pointer = pointer;
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -57,6 +58,28 @@ public class DragInput extends DragListener {
 				player.setCrouch(true);
 				cancel();
 			}
+		}
+	}
+	
+	@Override
+	public boolean keyDown(InputEvent event, int keycode) {
+		switch (keycode) {
+		case Keys.W:
+		case Keys.UP:
+			if (player.canJump()) {
+				player.setJump(true);
+				player.setCrouch(false);
+			}
+			return true;
+		case Keys.S:
+		case Keys.DOWN:
+			if (player.canCrouch()) {
+				player.setJump(false);
+				player.setCrouch(true);
+			}
+			return true;
+		default:
+			return true;
 		}
 	}
 }

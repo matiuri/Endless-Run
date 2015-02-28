@@ -21,7 +21,7 @@ public class TitleScreen extends ScreenAdapter {
 	private Stage stage;
 	private Table table;
 	private TextButton play, exit;
-
+	
 	/**
 	 * Crea la pantalla de título como objeto
 	 * 
@@ -31,7 +31,12 @@ public class TitleScreen extends ScreenAdapter {
 	public TitleScreen(Endless game) {
 		super(game);
 	}
-
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see endless.screens.ScreenAdapter#show()
+	 */
 	@Override
 	public void show() {
 		stage = new Stage(new ScreenViewport());
@@ -44,39 +49,55 @@ public class TitleScreen extends ScreenAdapter {
 		table.add(play = new TextButton("Play", skin)).colspan(2).fill();
 		table.row();
 		table.add(exit = new TextButton("Exit", skin)).colspan(2).fill();
-
+		table.row();
+		
 		play.addCaptureListener(new ChangeListener() {
-
+			
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				game.gameScreen = new GameScreen(game);
 				game.setScreen(game.gameScreen);
 			}
 		});
-
+		
 		exit.addCaptureListener(new ChangeListener() {
-
+			
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				Gdx.app.exit();
 			}
 		});
-
+		
 		Gdx.input.setInputProcessor(stage);
 	}
-
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see endless.screens.ScreenAdapter#render(float)
+	 */
 	@Override
 	public void render(float delta) {
 		Endless.clearScreen(Color.RED, 1);
 		stage.act(delta);
 		stage.draw();
 	}
-
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see endless.screens.ScreenAdapter#resize(int, int)
+	 */
 	@Override
 	public void resize(int width, int height) {
 		stage.getViewport().update(width, height);
 	}
-
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see endless.screens.ScreenAdapter#hide()
+	 */
 	@Override
 	public void hide() {
 		stage.dispose();

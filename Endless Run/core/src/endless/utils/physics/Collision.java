@@ -21,13 +21,13 @@ import endless.screens.GameScreen;
  */
 public class Collision implements ContactListener {
 	private GameScreen game;
-
+	
 	private final boolean test = false;
-
+	
 	public Collision(GameScreen game) {
 		this.game = game;
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -36,20 +36,20 @@ public class Collision implements ContactListener {
 	@Override
 	public void beginContact(Contact contact) {
 		Fixture a = contact.getFixtureA(), b = contact.getFixtureB();
-
+		
 		if (collisionPlayer_Ground(a, b)) {
 			((Player) a.getUserData()).setStand(true);
 		}
 		if (collisionPlayer_Ground(b, a)) {
 			((Player) b.getUserData()).setStand(true);
 		}
-
+		
 		if (collisionPlayer_Box(a, b) || collisionPlayer_Box(b, a)) {
 			if (!test)
 				game.end();
 		}
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -58,7 +58,7 @@ public class Collision implements ContactListener {
 	@Override
 	public void endContact(Contact contact) {
 		Fixture a = contact.getFixtureA(), b = contact.getFixtureB();
-
+		
 		if (collisionPlayer_Ground(a, b)) {
 			((Player) a.getUserData()).setStand(false);
 		}
@@ -66,7 +66,7 @@ public class Collision implements ContactListener {
 			((Player) b.getUserData()).setStand(false);
 		}
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -77,7 +77,7 @@ public class Collision implements ContactListener {
 	public void preSolve(Contact contact, Manifold oldManifold) {
 		// Nothing
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -88,7 +88,7 @@ public class Collision implements ContactListener {
 	public void postSolve(Contact contact, ContactImpulse impulse) {
 		// Nothing
 	}
-
+	
 	/**
 	 * @param a
 	 *            {@link Fixture}
@@ -103,7 +103,7 @@ public class Collision implements ContactListener {
 			return false;
 		}
 	}
-
+	
 	/**
 	 * @param a
 	 *            {@link Fixture}
@@ -112,7 +112,7 @@ public class Collision implements ContactListener {
 	 * @return true si uno de los {@link Fixture} es {@link Player} y el otro {@link Box}
 	 */
 	private boolean collisionPlayer_Box(Fixture a, Fixture b) {
-		if (a.getUserData() instanceof Player && b.getUserData() instanceof Box) {
+		if (a.getUserData() instanceof Player) {
 			if (b.getUserData() instanceof BottomBox) {
 				return true;
 			} else if (b.getUserData() instanceof TopBox) {
