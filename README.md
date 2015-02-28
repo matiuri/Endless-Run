@@ -1,6 +1,9 @@
 # Endless-Run
 Juego del género Endless Runner pensado para Android (pero que también se puede ejecutar en PC) programado con Java y libGDX. **¡¡EN FASE TEMPRANA DE DESARROLLO!! ¡Endless Run es el nombre temporal del proyecto!**
 
+## Versiones
+La lista de versiones se encuentra en la pestaña [*releases*](https://github.com/matiuri/Endless-Run/releases). Cada versión especifica sus cambios y los controles para jugar, ya que el juego está en una fase temprana del desarrollo y todo está en constante cambio.
+
 ## Código fuente
 Se encuentra a partir del directorio *Endless Run/core/src/endless/* de este repositorio y se usa desde cualquier plataforma. Cada carpeta representa un paquete, en donde se encuentran los ficheros *.java*.
 
