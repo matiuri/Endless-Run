@@ -2,6 +2,7 @@ package endless.screens;
 
 import java.util.Iterator;
 
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -19,9 +20,10 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import endless.Endless;
-import endless.entities.blocks.BottomBox;
-import endless.entities.blocks.Box;
-import endless.entities.blocks.TopBox;
+import endless.entities.blocks.boxes.BottomBox;
+import endless.entities.blocks.boxes.Box;
+import endless.entities.blocks.boxes.TopBox;
+import endless.entities.blocks.walls.Wall;
 import endless.entities.ground.Ground;
 import endless.entities.player.Player;
 import endless.input.DragInput;
@@ -51,8 +53,15 @@ public class GameScreen extends ScreenAdapter {
 	private Ground ground;
 	private Player player;
 	private Array<Actor> backActors, frontActors;
-	private final float TIMER_CLOUDS = 1.5f, TIMER_BOXES = 2f, GAME_OVER_TIMER = 1.5f;
-	private float timer_clouds, accum, timer_boxes = TIMER_BOXES, gameOverTimer = GAME_OVER_TIMER;
+	private final float TIMER_CLOUDS = 1.5f, TIMER_BOXES;
+	{
+		if (Gdx.app.getType() == ApplicationType.Desktop) {
+			TIMER_BOXES = 2f;
+		} else {
+			TIMER_BOXES = 2.5f;
+		}
+	}
+	private float timer_clouds, accum, timer_boxes = TIMER_BOXES;
 	private Label score;
 	private int points = 0;
 	private boolean gameOver = false, back_front = false;;
@@ -137,7 +146,7 @@ public class GameScreen extends ScreenAdapter {
 		if (!gameOver) {
 			Endless.clearScreen();
 			spawnCloud(delta);
-			spawnBox(delta);
+			spawnBoxOrWall(delta);
 			despawn();
 			score.setText("Score: " + points);
 			if (Endless.DEBUG) {
@@ -151,11 +160,8 @@ public class GameScreen extends ScreenAdapter {
 			back.act(delta);
 			front.act(delta);
 		} else {
-			gameOverTimer -= delta;
-			if (gameOverTimer <= 0) {
-				gameOver = false;
-				game.setScreen(game.titleScreen);
-			}
+			game.gameOverScreen = new GameOverScreeen(game, points);
+			game.setScreen(game.gameOverScreen);
 		}
 	}
 	
@@ -188,6 +194,7 @@ public class GameScreen extends ScreenAdapter {
 		back.dispose();
 		backActors.clear();
 		frontActors.clear();
+		world.dispose();
 		
 		synchronized (lockMonitor) {
 			randomYCloudThreadRun = false;
@@ -295,17 +302,19 @@ public class GameScreen extends ScreenAdapter {
 	}
 	
 	/**
-	 * Crea una caja
+	 * Crea una caja o una pared
 	 * 
 	 * @param delta
 	 */
-	private void spawnBox(float delta) {
+	private void spawnBoxOrWall(float delta) {
+		// FIXME
 		timer_boxes -= delta;
 		if (timer_boxes <= 0) {
+			front.addActor(new Wall(800, world));
 			float rand = MathUtils.random();
-			if (rand > 0.5f) {
+			if (rand > 1 / 3f) {
 				front.addActor(new TopBox(800, world));
-			} else {
+			} else if (rand < 2 / 3f) {
 				front.addActor(new BottomBox(800, world));
 			}
 			timer_boxes = TIMER_BOXES;

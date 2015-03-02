@@ -1,4 +1,4 @@
-package endless.entities.blocks;
+package endless.entities.blocks.boxes;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -12,15 +12,8 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 
 import endless.Endless;
-import endless.entities.ground.Ground;
 
-/**
- * Clase que extiende a {@link Box}. Se coloca a nivel de {@link Ground}
- * 
- * @author Matías
- *
- */
-public class BottomBox extends Box {
+public class TopBox extends Box {
 	private Body b;
 
 	/**
@@ -29,9 +22,9 @@ public class BottomBox extends Box {
 	 * @param x
 	 *            la posición en x
 	 */
-	public BottomBox(float x, World world) {
+	public TopBox(float x, World world) {
 		super(Endless.Entities_Box);
-		setBounds(x, 16, 64, 64);
+		setBounds(x, 240, 64, 64);
 
 		BodyDef bd = new BodyDef();
 		bd.type = BodyType.KinematicBody;

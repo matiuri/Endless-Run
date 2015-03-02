@@ -33,13 +33,36 @@ public class Player extends Actor implements RenderableDebug {
 	private Animation animation;
 	private final float TIMER = 1.5f;
 	private float timer = TIMER;
+	private PlayerColor color;
+	
+	private enum PlayerColor {
+		YELLOW(Color.YELLOW), GREEN(Color.GREEN), BLUE(Color.BLUE);
+		
+		private Color color;
+		private float r, g, b;
+		
+		PlayerColor(Color color) {
+			this.color = color;
+			r = color.r;
+			g = color.g;
+			b = color.b;
+		}
+		
+		private PlayerColor next() {
+			return (ordinal() < values().length - 1) ? values()[ordinal() + 1] : values()[0];
+		}
+		
+		private PlayerColor prev() {
+			return (ordinal() > 0) ? values()[ordinal() - 1] : values()[values().length - 1];
+		}
+	}
 	
 	/**
 	 * Crea el jugador y define su cuerpo por medio de {@link Rectangle}
 	 */
 	public Player(World world) {
 		setBounds(16, 16, 64, 256);
-		animation = new Animation(Endless.Entities_Player, true, 0.025f);
+		animation = new Animation(Endless.Entities_Player, true, 0.075f);
 		
 		BodyDef bd = new BodyDef();
 		bd.type = BodyType.DynamicBody;
@@ -56,6 +79,8 @@ public class Player extends Actor implements RenderableDebug {
 		Fixture f = b.createFixture(fd);
 		f.setUserData(this);
 		s.dispose();
+		
+		color = PlayerColor.YELLOW;
 	}
 	
 	/*
@@ -86,19 +111,24 @@ public class Player extends Actor implements RenderableDebug {
 				timer = TIMER;
 			}
 		}
+		if (b.getPosition().x != (getX() + getWidth() / 2) / 100) {
+			b.setTransform((getX() + getWidth() / 2) / 100, b.getPosition().y, 0);
+		}
 		
 		setPosition(b.getPosition().x * 100, b.getPosition().y * 100, Align.center);
 	}
 	
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
+		batch.setColor(color.r, color.g, color.b, parentAlpha);
 		if (!crouch) {
 			batch.draw(animation.getActualFrame(Gdx.graphics.getDeltaTime()), getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(),
 					getScaleX(), getScaleY(), getRotation());
 		} else {
 			batch.draw(animation.getActualFrame(Gdx.graphics.getDeltaTime()), getX(), getY(), getOriginX(), getOriginY(), getWidth(),
-					getHeight() / 4 * 3, getScaleX(), getScaleY(), getRotation());
+					getHeight() * 3 / 4f, getScaleX(), getScaleY(), getRotation());
 		}
+		Endless.setDefaultColor(batch);
 	}
 	
 	/*
@@ -108,12 +138,21 @@ public class Player extends Actor implements RenderableDebug {
 	 */
 	@Override
 	public void debug(ShapeRenderer shaper) {
+		shaper.setColor(color.color);
 		if (crouch) {
-			shaper.setColor(Color.CYAN);
+			shaper.rect(getX(), getY(), getWidth(), getHeight() * 3 / 4f);
 		} else {
-			shaper.setColor(Color.WHITE);
+			shaper.rect(getX(), getY(), getWidth(), getHeight());
 		}
-		shaper.rect(getX(), getY(), getWidth(), getHeight());
+	}
+	
+	public void nextColor() {
+		color = color.next();
+	}
+	
+	// TODO: implement this
+	public void prevColor() {
+		color = color.prev();
 	}
 	
 	/**
@@ -162,5 +201,10 @@ public class Player extends Actor implements RenderableDebug {
 	
 	public boolean isCrouched() {
 		return crouch;
+	}
+	
+	@Override
+	public Color getColor() {
+		return color.color;
 	}
 }

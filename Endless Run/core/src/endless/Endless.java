@@ -7,6 +7,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Disposable;
 
 import endless.screens.ScreenAdapter;
@@ -38,22 +39,15 @@ public class Endless extends Game {
 		FPS(int fps) {
 			this.fps = fps;
 		}
-		
-		/**
-		 * @return la variable fps
-		 */
-		public int getFps() {
-			return fps;
-		}
 	}
 	
-	public static final String TITLE = "Endless Run", VERSION = "Alpha 0.1", VENDOR = "Matías Steinberg";
-	public static final int FPS_F = FPS.UNLIMITED.getFps(), FPS_B = FPS.UNLIMITED.getFps();
+	public static final String TITLE = "Endless Run", VERSION = "Alpha 0.1", VENDOR = "Matias Steinberg";
+	public static final int FPS_F = FPS.UNLIMITED.fps, FPS_B = FPS.UNLIMITED.fps;
 	public static int width, height;
 	public static final boolean RESIZABLE = true, FULLSCREEN = true, VSYNC = true, DEBUG = false;
 	public static final AssetManager MANAGER = new AssetManager();
 	
-	public ScreenAdapter titleScreen, gameScreen;
+	public ScreenAdapter titleScreen, gameScreen, gameOverScreen;
 	
 	/*
 	 * (non-Javadoc)
@@ -134,7 +128,11 @@ public class Endless extends Game {
 		Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
 	}
 	
-	public static Texture Terrain_Background, Terrain_Cloud, Entities_Ground, Entities_Box;
+	public static void setDefaultColor(Batch batch) {
+		batch.setColor(1, 1, 1, 1);
+	}
+	
+	public static Texture Terrain_Background, Terrain_Cloud, Entities_Ground, Entities_Box, Entities_Wall;
 	public static Texture[] Entities_Player;
 	
 	/**
@@ -145,13 +143,18 @@ public class Endless extends Game {
 		MANAGER.load("Terrain/Cloud.png", Texture.class);
 		MANAGER.load("Entities/Ground.png", Texture.class);
 		MANAGER.load("Entities/Box.png", Texture.class);
+		MANAGER.load("Entities/Wall.png", Texture.class);
+		
 		MANAGER.load("Entities/Player/1.png", Texture.class);
 		MANAGER.load("Entities/Player/2.png", Texture.class);
+		
 		MANAGER.finishLoading();
+		
 		Terrain_Background = MANAGER.get("Terrain/Background.png", Texture.class);
 		Terrain_Cloud = MANAGER.get("Terrain/Cloud.png", Texture.class);
 		Entities_Ground = MANAGER.get("Entities/Ground.png", Texture.class);
 		Entities_Box = MANAGER.get("Entities/Box.png", Texture.class);
+		Entities_Wall = MANAGER.get("Entities/Wall.png", Texture.class);
 		Entities_Player = new Texture[2];
 		Entities_Player[0] = MANAGER.get("Entities/Player/1.png", Texture.class);
 		Entities_Player[1] = MANAGER.get("Entities/Player/2.png", Texture.class);

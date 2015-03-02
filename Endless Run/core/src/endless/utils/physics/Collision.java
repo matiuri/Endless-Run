@@ -6,9 +6,10 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
-import endless.entities.blocks.BottomBox;
-import endless.entities.blocks.Box;
-import endless.entities.blocks.TopBox;
+import endless.entities.blocks.boxes.BottomBox;
+import endless.entities.blocks.boxes.Box;
+import endless.entities.blocks.boxes.TopBox;
+import endless.entities.blocks.walls.Wall;
 import endless.entities.ground.Ground;
 import endless.entities.player.Player;
 import endless.screens.GameScreen;
@@ -22,7 +23,7 @@ import endless.screens.GameScreen;
 public class Collision implements ContactListener {
 	private GameScreen game;
 	
-	private final boolean test = false;
+	private final boolean TEST = false;
 	
 	public Collision(GameScreen game) {
 		this.game = game;
@@ -45,8 +46,14 @@ public class Collision implements ContactListener {
 		}
 		
 		if (collisionPlayer_Box(a, b) || collisionPlayer_Box(b, a)) {
-			if (!test)
+			if (!TEST)
 				game.end();
+		}
+		
+		if (collisionPlayer_Wall(a, b) || collisionPlayer_Wall(b, a)) {
+			if (!TEST) {
+				game.end();
+			}
 		}
 	}
 	
@@ -123,6 +130,18 @@ public class Collision implements ContactListener {
 				}
 			} else {
 				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+	
+	private boolean collisionPlayer_Wall(Fixture a, Fixture b) {
+		if (a.getUserData() instanceof Player && b.getUserData() instanceof Wall) {
+			if (((Player) a.getUserData()).getColor().equals(((Wall) b.getUserData()).getColor())) {
+				return false;
+			} else {
+				return true;
 			}
 		} else {
 			return false;

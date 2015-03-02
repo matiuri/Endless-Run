@@ -1,4 +1,4 @@
-package endless.entities.blocks;
+package endless.entities.blocks.boxes;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;

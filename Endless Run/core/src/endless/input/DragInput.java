@@ -14,8 +14,9 @@ import endless.entities.player.Player;
  */
 public class DragInput extends DragListener {
 	private Player player;
-	private float y;
+	private float x, y;
 	private int pointer;
+	private boolean xDrag, yDrag;
 	
 	/**
 	 * Crea el procesador de entrada táctil
@@ -35,8 +36,10 @@ public class DragInput extends DragListener {
 	 */
 	@Override
 	public void dragStart(InputEvent event, float x, float y, int pointer) {
+		this.x = x;
 		this.y = y;
 		this.pointer = pointer;
+		xDrag = yDrag = true;
 	}
 	
 	/*
@@ -48,15 +51,24 @@ public class DragInput extends DragListener {
 	@Override
 	public void drag(InputEvent event, float x, float y, int pointer) {
 		if (this.pointer == pointer) {
-			float delta = y - this.y;
-			if (delta >= 20 && player.canJump()) {
-				player.setJump(true);
-				player.setCrouch(false);
-				cancel();
-			} else if (delta <= -20 && player.canCrouch()) {
-				player.setJump(false);
-				player.setCrouch(true);
-				cancel();
+			if (xDrag) {
+				float deltaX = x - this.x;
+				if (deltaX >= 20) {
+					player.nextColor();
+					xDrag = false;
+				}
+			}
+			if (yDrag) {
+				float deltaY = y - this.y;
+				if (deltaY >= 20 && player.canJump()) {
+					player.setJump(true);
+					player.setCrouch(false);
+					yDrag = false;
+				} else if (deltaY <= -20 && player.canCrouch()) {
+					player.setJump(false);
+					player.setCrouch(true);
+					yDrag = false;
+				}
 			}
 		}
 	}
@@ -77,6 +89,9 @@ public class DragInput extends DragListener {
 				player.setJump(false);
 				player.setCrouch(true);
 			}
+			return true;
+		case Keys.SPACE:
+			player.nextColor();
 			return true;
 		default:
 			return true;

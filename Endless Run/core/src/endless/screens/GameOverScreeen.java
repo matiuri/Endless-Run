@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -11,48 +12,42 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import endless.Endless;
 
-/**
- * La pantalla de título
- * 
- * @author Matías
- *
- */
-public class TitleScreen extends ScreenAdapter {
+public class GameOverScreeen extends ScreenAdapter {
+	private final int SCORE;
 	private Stage stage;
 	private Table table;
-	private TextButton play, exit;
+	private Label gameOver;
+	private TextButton title, retry;
 	
-	/**
-	 * Crea la pantalla de título como objeto
-	 * 
-	 * @param game
-	 *            clase principal
-	 */
-	public TitleScreen(Endless game) {
+	public GameOverScreeen(Endless game, int score) {
 		super(game);
+		SCORE = score;
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see endless.screens.ScreenAdapter#show()
-	 */
 	@Override
 	public void show() {
 		stage = new Stage(new ScreenViewport());
 		table = new Table(skin);
 		stage.addActor(table);
 		table.setFillParent(true);
-		table.add("Endless Run").padRight(10);
-		table.add(Endless.VERSION);
+		table.add(gameOver = new Label("Game Over", skin)).colspan(2);
+		gameOver.setColor(Color.ORANGE);
 		table.row();
-		table.add(play = new TextButton("Play", skin)).colspan(2).fill();
+		table.add("Score:");
+		table.add(Integer.toString(SCORE));
 		table.row();
-		table.add(exit = new TextButton("Exit", skin)).colspan(2).fill();
-		table.row();
-		table.add(Endless.VENDOR).colspan(2);
+		table.add(title = new TextButton("Continue", skin)).fill();
+		table.add(retry = new TextButton("Retry", skin)).fill();
+		Gdx.input.setInputProcessor(stage);
+		title.addCaptureListener(new ChangeListener() {
+			
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				game.setScreen(game.titleScreen);
+			}
+		});
 		
-		play.addCaptureListener(new ChangeListener() {
+		retry.addCaptureListener(new ChangeListener() {
 			
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -60,23 +55,8 @@ public class TitleScreen extends ScreenAdapter {
 				game.setScreen(game.gameScreen);
 			}
 		});
-		
-		exit.addCaptureListener(new ChangeListener() {
-			
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				Gdx.app.exit();
-			}
-		});
-		
-		Gdx.input.setInputProcessor(stage);
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see endless.screens.ScreenAdapter#render(float)
-	 */
 	@Override
 	public void render(float delta) {
 		Endless.clearScreen(Color.RED, 1);
@@ -84,21 +64,11 @@ public class TitleScreen extends ScreenAdapter {
 		stage.draw();
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see endless.screens.ScreenAdapter#resize(int, int)
-	 */
 	@Override
 	public void resize(int width, int height) {
 		stage.getViewport().update(width, height);
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see endless.screens.ScreenAdapter#hide()
-	 */
 	@Override
 	public void hide() {
 		stage.dispose();
