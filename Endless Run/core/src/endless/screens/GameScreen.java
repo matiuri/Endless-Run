@@ -20,10 +20,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import endless.Endless;
-import endless.entities.blocks.boxes.BottomBox;
 import endless.entities.blocks.boxes.Box;
-import endless.entities.blocks.boxes.TopBox;
-import endless.entities.blocks.walls.Wall;
 import endless.entities.ground.Ground;
 import endless.entities.player.Player;
 import endless.input.DragInput;
@@ -31,6 +28,7 @@ import endless.terrain.Background;
 import endless.terrain.Cloud;
 import endless.utils.concurrent.RandomYCloud;
 import endless.utils.debug.RenderableDebug;
+import endless.utils.levelgen.LevelGen;
 import endless.utils.physics.Collision;
 
 /**
@@ -61,18 +59,20 @@ public class GameScreen extends ScreenAdapter {
 			TIMER_BOXES = 2.5f;
 		}
 	}
-	private float timer_clouds, accum, timer_boxes = TIMER_BOXES;
+	private float timer_clouds, accum;
 	private Label score;
 	private int points = 0;
 	private boolean gameOver = false, back_front = false;;
 	
 	// Threading
-	private Thread randCloudThread;
+	private Thread randCloudThread, levelGenThread;
 	// RandomYCloud thread
 	private RandomYCloud randCloud;
 	public volatile float lastY_clouds = 0;
 	public volatile boolean checkedYCloud, randomYCloudThreadRun;
-	public final Object lockMonitor = new Object();
+	public final Object lockMonitor_RandomYCloud = new Object();
+	// LevelGen Thread
+	private LevelGen levelGen;
 	
 	/**
 	 * Inicializa la pantalla de juego como objeto
@@ -134,6 +134,10 @@ public class GameScreen extends ScreenAdapter {
 		randCloud = new RandomYCloud(this);
 		randCloudThread = new Thread(randCloud, "Random Y Cloud");
 		randCloudThread.start();
+		
+		levelGen = new LevelGen(TIMER_BOXES);
+		levelGenThread = new Thread(levelGen, "LevelGen");
+		levelGenThread.start();
 	}
 	
 	/*
@@ -146,7 +150,7 @@ public class GameScreen extends ScreenAdapter {
 		if (!gameOver) {
 			Endless.clearScreen();
 			spawnCloud(delta);
-			spawnBoxOrWall(delta);
+			levelGen.spawn(delta, front, world);
 			despawn();
 			score.setText("Score: " + points);
 			if (Endless.DEBUG) {
@@ -196,9 +200,9 @@ public class GameScreen extends ScreenAdapter {
 		frontActors.clear();
 		world.dispose();
 		
-		synchronized (lockMonitor) {
+		synchronized (lockMonitor_RandomYCloud) {
 			randomYCloudThreadRun = false;
-			lockMonitor.notify();
+			lockMonitor_RandomYCloud.notify();
 		}
 		try {
 			randCloudThread.join();
@@ -206,6 +210,16 @@ public class GameScreen extends ScreenAdapter {
 			e.printStackTrace();
 		}
 		checkedYCloud = false;
+		
+		synchronized (levelGen.lockMonitor) {
+			levelGen.end();
+			levelGen.lockMonitor.notify();
+		}
+		try {
+			levelGenThread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void end() {
@@ -267,13 +281,13 @@ public class GameScreen extends ScreenAdapter {
 	private void spawnCloud(float delta) {
 		timer_clouds -= delta;
 		if (timer_clouds <= 0) {
-			synchronized (lockMonitor) {
+			synchronized (lockMonitor_RandomYCloud) {
 				if (checkedYCloud) {
 					Cloud temp = new Cloud(800, lastY_clouds);
 					back.addActor(temp);
 					timer_clouds = MathUtils.random() + TIMER_CLOUDS;
 					checkedYCloud = false;
-					lockMonitor.notify();
+					lockMonitor_RandomYCloud.notify();
 				}
 			}
 		}
@@ -298,26 +312,6 @@ public class GameScreen extends ScreenAdapter {
 					a.remove();
 				}
 			}
-		}
-	}
-	
-	/**
-	 * Crea una caja o una pared
-	 * 
-	 * @param delta
-	 */
-	private void spawnBoxOrWall(float delta) {
-		// FIXME
-		timer_boxes -= delta;
-		if (timer_boxes <= 0) {
-			front.addActor(new Wall(800, world));
-			float rand = MathUtils.random();
-			if (rand > 1 / 3f) {
-				front.addActor(new TopBox(800, world));
-			} else if (rand < 2 / 3f) {
-				front.addActor(new BottomBox(800, world));
-			}
-			timer_boxes = TIMER_BOXES;
 		}
 	}
 }

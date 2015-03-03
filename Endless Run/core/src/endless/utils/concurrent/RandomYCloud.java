@@ -15,7 +15,7 @@ public class RandomYCloud implements Runnable {
 	public void run() {
 		float rand = 0;
 		while (game.randomYCloudThreadRun) {
-			synchronized (game.lockMonitor) {
+			synchronized (game.lockMonitor_RandomYCloud) {
 				if (!game.checkedYCloud) {
 					rand = MathUtils.random(345, 445) + MathUtils.random();
 					if (rand < game.lastY_clouds - 52 || rand > game.lastY_clouds + 52) {
@@ -24,7 +24,7 @@ public class RandomYCloud implements Runnable {
 					}
 				} else {
 					try {
-						game.lockMonitor.wait();
+						game.lockMonitor_RandomYCloud.wait();
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}

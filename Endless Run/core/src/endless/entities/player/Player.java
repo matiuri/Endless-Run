@@ -150,7 +150,6 @@ public class Player extends Actor implements RenderableDebug {
 		color = color.next();
 	}
 	
-	// TODO: implement this
 	public void prevColor() {
 		color = color.prev();
 	}

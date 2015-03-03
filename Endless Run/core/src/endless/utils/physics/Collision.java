@@ -1,4 +1,4 @@
-package endless.utils.physics;
+﻿package endless.utils.physics;
 
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -51,9 +51,8 @@ public class Collision implements ContactListener {
 		}
 		
 		if (collisionPlayer_Wall(a, b) || collisionPlayer_Wall(b, a)) {
-			if (!TEST) {
+			if (!TEST)
 				game.end();
-			}
 		}
 	}
 	
